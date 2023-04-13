@@ -1,0 +1,87 @@
+<!ELEMENT jail ( user,
+		    chpath,
+		    rlimit,
+		    umask,
+		    home,
+		    bind_ro,
+		    bind_rw,
+		    copy_d,
+		    copy_f,
+		    caps,
+		    args,
+		    restart,
+		    reboot)>
+<!ATTLIST jail
+	name		CDATA #REQUIRED
+>
+
+<!ELEMENT user  EMPTY  >
+<!ATTLIST user
+	username	CDATA #REQUIRED
+	group	        CDATA #REQUIRED
+>
+<!ELEMENT chpath  EMPTY  >
+<!ATTLIST chpath
+	path	CDATA #REQUIRED
+>
+
+<!ELEMENT rlimit EMPTY >
+<!ATTLIST rlimit
+	as		CDATA #REQUIRED
+	fsize		CDATA #REQUIRED
+	mq		CDATA #REQUIRED
+	stack		CDATA #REQUIRED
+	nice		CDATA #REQUIRED
+	arena 		CDATA #REQUIRED
+>
+
+<!ELEMENT umask EMPTY >
+<!ATTLIST umask
+	value		CDATA #REQUIRED
+>
+
+
+<!ELEMENT home EMPTY >
+<!ATTLIST home
+	path		CDATA #REQUIRED
+>
+
+<!ELEMENT bind_ro EMPTY >
+<!ATTLIST bind_ro
+	path		CDATA #REQUIRED
+>
+
+<!ELEMENT bind_rw EMPTY >
+<!ATTLIST bind_rw
+	path		CDATA #REQUIRED
+>
+<!ELEMENT copy_f EMPTY >
+<!ATTLIST copy_f
+	path		CDATA #REQUIRED
+>
+
+<!ELEMENT copy_d EMPTY >
+<!ATTLIST copy_d
+	path		CDATA #REQUIRED
+>
+
+<!ELEMENT caps EMPTY >
+<!ATTLIST caps
+	name		CDATA #REQUIRED
+>
+
+<!ELEMENT args EMPTY >
+<!ATTLIST args
+	name		CDATA #REQUIRED
+>
+
+<!ELEMENT restart EMPTY >
+<!ATTLIST restart
+	value (y|n)  #REQUIRED
+>
+
+<!ELEMENT reboot EMPTY >
+<!ATTLIST reboot
+	value (y|n)  #REQUIRED
+>
+
