@@ -8,7 +8,7 @@
  * @version 0.1
  */
 
-#include "../inc/jail.h"
+
 #include <string.h>
 #include <libxml/parser.h>
 #include <sys/types.h>
@@ -17,6 +17,7 @@
 #include <string.h>
 #include <expat.h>
 #include <errno.h>
+#include "jail.h"
 #define CMP_SEC_LEN 10
 /**
  * @brief
@@ -60,9 +61,9 @@ static void fill_process_chpath(data_t * const pout , const char **attr)
  */
 static void fill_user_group(data_t * const pout , const char **attr)
 {
-    ENTER();
     int i;
     char data[MAX_ID_LEN];
+    ENTER();
     for (i=0; attr[i]; i+=2)
     {
         if ( 0 ==  strncmp("username", attr[i], CMP_SEC_LEN))
@@ -129,14 +130,15 @@ static long getValue(const char * str, int base)
  */
 static void fill_limits(data_t * const pout , const char **attr)
 {
-    ENTER();
     int i;
+    ENTER();
+
     for (i=0; attr[i]; i+=2)
     {
 
         if ( 0 ==  strncmp("as", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.as = getValue(attr[i+1], 10);
+            pout->limits.as = (rlim_t) getValue(attr[i+1], 10);
             if (0 == pout->limits.as)
             {
                 pout->limits.as = RLIM_INFINITY;
@@ -144,7 +146,7 @@ static void fill_limits(data_t * const pout , const char **attr)
         }
         else if ( 0 ==  strncmp("fsize", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.fsize = getValue(attr[i+1], 10);
+            pout->limits.fsize =(rlim_t) getValue(attr[i+1], 10);
             if (0 == pout->limits.fsize)
             {
                 pout->limits.fsize = RLIM_INFINITY;
@@ -152,7 +154,7 @@ static void fill_limits(data_t * const pout , const char **attr)
         }
         else if ( 0 ==  strncmp("stack", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.stack = getValue(attr[i+1], 10);
+            pout->limits.stack = (rlim_t) getValue(attr[i+1], 10);
             if (0 == pout->limits.stack)
             {
                 pout->limits.stack = RLIM_INFINITY;
@@ -160,7 +162,7 @@ static void fill_limits(data_t * const pout , const char **attr)
         }
         else if ( 0 ==  strncmp("mq", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.mq = getValue(attr[i+1], 10);
+            pout->limits.mq = (rlim_t) getValue(attr[i+1], 10);
             if (0 == pout->limits.mq)
             {
                 pout->limits.mq = RLIM_INFINITY;
@@ -168,7 +170,7 @@ static void fill_limits(data_t * const pout , const char **attr)
         }
         else if ( 0 ==  strncmp("data", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.mq = getValue(attr[i+1], 10);
+            pout->limits.mq = (rlim_t) getValue(attr[i+1], 10);
             if (0 == pout->limits.data)
             {
                 pout->limits.data = RLIM_INFINITY;
@@ -176,11 +178,11 @@ static void fill_limits(data_t * const pout , const char **attr)
         }
         else if ( 0 ==  strncmp("nice", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.nice = getValue(attr[i+1], 10);
+            pout->limits.nice = (int) getValue(attr[i+1], 10);
         }
         else if ( 0 ==  strncmp("arena", attr[i], CMP_SEC_LEN))
         {
-            pout->limits.arena = getValue(attr[i+1], 10);
+            pout->limits.arena = (int) getValue(attr[i+1], 10);
             if (8 < pout->limits.arena)
             {
                 pout->limits.arena = 0;
@@ -468,7 +470,7 @@ static int xml_parse(data_t * const pout, const char * const data)
 
     XML_SetElementHandler(parser, start, end);
 
-    if (XML_STATUS_ERROR == XML_Parse(parser, data, strlen(data), XML_TRUE) )
+    if (XML_STATUS_ERROR == XML_Parse(parser, data, (int) strlen(data), XML_TRUE) )
     {
         goto out;
     }
@@ -574,7 +576,7 @@ int parse(const char * const in, data_t * const out)
     if (0 == stat(in, &buf))
     {
         /* allocate required memory */
-        xmldata = calloc(1, buf.st_size+1);
+        xmldata = calloc(1,(size_t) buf.st_size + 1u);
         if (NULL == xmldata)
         {
             DIE("No more memory \n");
@@ -586,7 +588,7 @@ int parse(const char * const in, data_t * const out)
             DIE("Cannot open file for reading");
         }
 
-        if (0 == fread(xmldata, buf.st_size, 1, fin))
+        if (0 == fread(xmldata, (size_t) buf.st_size, 1, fin))
         {
             fclose(fin);
             DIE("Error while reading file");

@@ -5,7 +5,7 @@
  * @version 0.1
  */
 
-#include "../inc/jail.h"
+
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
@@ -20,7 +20,7 @@
 #include <sys/capability.h>  /* libcap */
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include "jail.h"
 
 /**
  * @brief
@@ -30,7 +30,7 @@
  * @return
  */
 
-static void set_signal_handles()
+static void set_signal_handles(void)
 {
     sigset_t empty;
     ENTER();
@@ -193,16 +193,16 @@ static void set_caps(data_t * const in)
     {
         if ((caps = capng_name_to_capability(cap)) >= 0)
         {
-            int a = strlen(fcap);
+            size_t a = strlen(fcap);
             LOG (LOG_DEBUG, "setting CAP %s  \n", cap);
             if (strncmp ( cap, "chown", 6) == 0)
                 chown = 1;
             if (is_authorised_cap(cap))
             {
-                capng_update( CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED|CAPNG_INHERITABLE, caps );
+                capng_update( CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED|CAPNG_INHERITABLE, (unsigned int) caps );
                 if (a<255)
                     snprintf(&fcap[a], 255-a, "cap_%s+epi  ", cap);
-                LOG(LOG_DEBUG, "%d %s\n",a,  fcap);
+                LOG(LOG_DEBUG, "%ld %s\n",a,  fcap);
             }
         }
         cap = (char*) strtok_r(NULL, " ", &saveptr);
@@ -227,7 +227,7 @@ static void set_caps(data_t * const in)
         }
     }
     LOG(LOG_DEBUG, "Change Id %s (%d / %d) \n", in->user->pw_name, in->user->pw_uid, in->grp->gr_gid);
-    if ((retVal = capng_change_id(in->user->pw_uid, in->grp->gr_gid,  CAPNG_DROP_SUPP_GRP|CAPNG_CLEAR_BOUNDING )) != 0)
+    if ((retVal = capng_change_id((int) in->user->pw_uid, (int) in->grp->gr_gid,  CAPNG_DROP_SUPP_GRP|CAPNG_CLEAR_BOUNDING )) != 0)
     {
         DIE("capng_change_id error %i\n", retVal);
     }

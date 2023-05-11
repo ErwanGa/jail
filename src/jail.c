@@ -5,7 +5,7 @@
  * @version 0.1
  */
 
-#include "../inc/jail.h"
+#include "jail.h"
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -512,7 +512,7 @@ static void copy_f(data_t *in)
 
         stat(&f[cpt], &fileinfo);
         LOG(LOG_DEBUG, "copy File %s in %s (%ld)\n", &f[cpt], f_path,  fileinfo.st_size);
-        sendfile(out, inp, &bC, fileinfo.st_size);
+        sendfile(out, inp, &bC, (size_t) fileinfo.st_size);
         fchmod(out, fileinfo.st_mode);
 
         close(inp);
@@ -570,7 +570,7 @@ static void copy_b(data_t *in)
         fchmod(out, 0755);
         stat(&f[cpt], &fileinfo);
         LOG(LOG_DEBUG, "copy File %s in %s (%ld)\n", &f[cpt], f_path,  fileinfo.st_size);
-        sendfile(out, inp, &bC, fileinfo.st_size);
+        sendfile(out, inp, &bC, (size_t) fileinfo.st_size);
         LOG(LOG_DEBUG, "Done \n");
         close(inp);
         close(out);
@@ -585,7 +585,7 @@ static void copy_b(data_t *in)
 
 /* let us make a recursive function to print the content of a given folder */
 
-void copy_all(char * src, char *dest,data_t *  in)
+static void copy_all(char * src, char *dest,data_t *  in)
 {
     char  s_path[MAX_PATH_LEN_16];
     char  d_path[MAX_PATH_LEN_16];
@@ -621,7 +621,7 @@ void copy_all(char * src, char *dest,data_t *  in)
             stat(s_path, &fileinfo);
 
             LOG(LOG_DEBUG, "copy File %s in %s (%ld)\n", s_path, d_path,  fileinfo.st_size);
-            sendfile(out, inp, &bC, fileinfo.st_size);
+            sendfile(out, inp, &bC, (size_t) fileinfo.st_size);
 
             close(inp);
             close(out);

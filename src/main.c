@@ -29,7 +29,7 @@
 #include <sys/wait.h>
 #include <unistd.h>    //write
 #include <time.h>    //write
-#include "../inc/jail.h"
+#include "jail.h"
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 /**
